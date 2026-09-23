@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="gold">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Srinath K | Web Developer &amp; Content Creator</title>
+  <meta name="description"
+    content="Cinematic 3D portfolio of Srinath K — Web Developer, Content Creator, and Video Editor based in Chennai, India. Specializing in responsive, interactive, and high-performance web experiences.">
+  <meta name="theme-color" content="#06070b">
+
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:title" content="Srinath K | Web Developer &amp; Content Creator">
+  <meta property="og:description"
+    content="Cinematic 3D portfolio of Srinath K — Web Developer, Content Creator, and Video Editor based in Chennai, India.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Anton (Display Headline) & Manrope (Body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- GSAP 3.12.5 and ScrollTrigger from cdnjs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Subtle Film Grain Overlay -->
+  <div class="cinematic-film-grain" aria-hidden="true"></div>
+
+  <!-- Skip to Content Link for Accessibility -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Top Scroll Progress Indicator -->
+  <div id="scroll-progress" class="scroll-progress-bar" role="progressbar" aria-label="Page scroll progress"
+    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <!-- Ambient Cursor Follower Glow (Desktop only) -->
+  <div id="cursor-glow" class="cursor-glow" aria-hidden="true"></div>
+
+  <!-- Global Header / Navigation -->
+  <header class="site-header" id="site-header">
+    <div class="nav-container">
+      <a href="#hero" class="brand-logo" aria-label="Srinath K Portfolio Home">
+        <span class="logo-text">SRINATH</span>
+        <span class="logo-dot" aria-hidden="true"></span>
+      </a>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="desktop-nav" aria-label="Main Navigation">
+        <ul class="nav-list">
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#projects" class="nav-link">Work</a></li>
+          <li><a href="#creator" class="nav-link">Create</a></li>
+          <li><a href="#education" class="nav-link">Education</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Theme Switcher & Mobile Menu Button -->
+      <div class="header-actions">
+        <!-- Palette Switcher Dots (Gold / Red) -->
+        <div class="theme-switcher" role="group" aria-label="Theme Accent Switcher">
+          <button type="button" class="theme-dot dot-gold active" data-set-theme="gold" aria-label="Activate Gold Theme"
+            title="Gold Theme" aria-pressed="true"></button>
+          <button type="button" class="theme-dot dot-red" data-set-theme="red" aria-label="Activate Red Theme"
+            title="Red Theme" aria-pressed="false"></button>
+        </div>
+
+        <!-- Hamburger Toggle Button (Mobile) -->
+        <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Toggle navigation menu"
+          aria-expanded="false" aria-controls="mobile-menu-overlay">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Fullscreen Mobile Navigation Overlay -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay" aria-hidden="true">
+    <div class="mobile-menu-backdrop"></div>
+    <div class="mobile-menu-content">
+      <nav class="mobile-nav" aria-label="Mobile Navigation">
+        <ul class="mobile-nav-list">
+          <li><a href="#about" class="mobile-nav-link"><span class="mobile-num">01</span> About</a></li>
+          <li><a href="#skills" class="mobile-nav-link"><span class="mobile-num">02</span> Skills</a></li>
+          <li><a href="#projects" class="mobile-nav-link"><span class="mobile-num">03</span> Work</a></li>
+          <li><a href="#creator" class="mobile-nav-link"><span class="mobile-num">04</span> Create</a></li>
+          <li><a href="#education" class="mobile-nav-link"><span class="mobile-num">05</span> Education</a></li>
+          <li><a href="#contact" class="mobile-nav-link"><span class="mobile-num">06</span> Contact</a></li>
+        </ul>
+      </nav>
+      <div class="mobile-menu-footer">
+        <p class="mobile-tagline">Web Developer • Content Creator • Video Editor</p>
+        <p class="mobile-location">Chennai, India</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Scrollable Container (with overflow: clip) -->
+  <main id="main-content" class="portfolio-main">
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="hero" class="hero-section" aria-label="Hero Introduction">
+      <!-- Floating Hero Ambient Particle Canvas -->
+      <canvas id="particle-canvas" class="particle-canvas" aria-hidden="true"></canvas>
+
+      <!-- Massive 3D Outlined Ghost Word -->
+      <div class="ghost-word ghost-hero" aria-hidden="true">SRINATH</div>
+
+      <!-- Hero Background Spotlight Beam -->
+      <div class="hero-spotlight-beam" aria-hidden="true"></div>
+
+      <div class="hero-container">
+        <!-- Hero Left / Content Column -->
+        <div class="hero-content">
+          <div class="hero-kicker-wrap">
+            <span class="hero-badge-pill">
+              <span class="status-indicator"></span>
+              Hi, I'm Srinath
+            </span>
+          </div>
+
+          <!-- Headline with masked lines for stagger reveal -->
+          <h1 class="hero-headline">
+            <span class="headline-line-mask"><span class="headline-line">I BUILD</span></span>
+            <span class="headline-line-mask"><span class="headline-line">DIGITAL</span></span>
+            <span class="headline-line-mask"><span class="headline-line gradient-text">EXPERIENCES.</span></span>
+          </h1>
+
+          <p class="hero-bio">
+            I build responsive, user-friendly, and interactive websites using modern web technologies. I'm passionate
+            about creating clean web experiences and continuously improving my development skills.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#projects" class="btn btn-primary">
+              <span>Explore my work</span>
+              <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+                <path fill-rule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </a>
+            <a href="#contact" class="btn btn-secondary">
+              <span>Get in touch</span>
+            </a>
+          </div>
+
+          <!-- Micro Stats / Highlights -->
+          <div class="hero-roles-bar">
+            <span class="role-item">Web Developer</span>
+            <span class="role-separator">•</span>
+            <span class="role-item">Content Creator</span>
+            <span class="role-separator">•</span>
+            <span class="role-item">Video Editor</span>
+          </div>
+        </div>
+
+        <!-- Hero Right / 3D Framed Photo Card -->
+        <div class="hero-photo-wrapper">
+          <div class="hero-3d-card-stage" id="hero-3d-stage">
+            <div class="hero-photo-card" id="hero-photo-card">
+              <!-- Glow Aura behind card -->
+              <div class="photo-card-glow" aria-hidden="true"></div>
+
+              <!-- Spotlight highlight sheen -->
+              <div class="photo-card-sheen" aria-hidden="true"></div>
+
+              <!-- Profile Graphic -->
+              <div class="photo-inner">
+                <img src="assets/profile-placeholder.svg" alt="Portrait silhouette of Srinath K with gold rim lighting"
+                  class="profile-img" width="500" height="650" loading="eager">
+              </div>
+
+              <!-- Floating Interactive 3D Badges -->
+              <div class="floating-badge badge-top-right">
+                <span class="badge-icon">📍</span>
+                <span class="badge-text">Chennai, India</span>
+              </div>
+              <div class="floating-badge badge-bottom-left">
+                <span class="badge-icon">⚡</span>
+                <span class="badge-text">Open to Roles</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Down Indicator -->
+      <a href="#about" class="hero-scroll-indicator" aria-label="Scroll to About section">
+        <span class="mouse-icon">
+          <span class="mouse-wheel"></span>
+        </span>
+        <span class="scroll-text">SCROLL</span>
+      </a>
+    </section>
+
+
+    <!-- ==================== 01 / ABOUT SECTION ==================== -->
+    <section id="about" class="portfolio-section section-3d" aria-labelledby="about-heading">
+      <!-- Outlined Ghost Word -->
+      <div class="ghost-word ghost-about" aria-hidden="true">ABOUT</div>
+
+      <div class="section-container">
+        <!-- Section Header Label -->
+        <div class="section-label-wrap">
+          <span class="section-num-tag">01 / About me</span>
+          <h2 id="about-heading" class="section-heading">Code meets <span class="gold">craft.</span></h2>
+        </div>
+
+        <div class="about-grid">
+          <!-- Left Column: Story & Narrative -->
+          <div class="about-narrative">
+            <p class="lead-paragraph">
+              I'm Srinath, a passionate Web Developer from Chennai with a strong interest in creating responsive and
+              user-friendly websites.
+            </p>
+            <p>
+              I have hands-on experience with HTML, CSS, JavaScript, and Bootstrap, and I enjoy turning ideas into
+              functional and interactive web experiences. Through my projects and internship experience, I've gained
+              practical knowledge of responsive design, DOM manipulation, Git, GitHub, and browser developer tools.
+            </p>
+            <p>
+              I'm continuously learning new technologies and improving my problem-solving skills. My goal is to build a
+              successful career as a Web Developer, work on real-world projects, and contribute to a professional
+              development team.
+            </p>
+ 
+            <div class="about-signature-block">
+              <span class="signature-name">Srinath K</span>
+              <span class="signature-role">Frontend &amp; Creative Developer</span>
+            </div>
+          </div>
+
+          <!-- Right Column: Glassmorphic 3D Fact Card -->
+          <div class="about-fact-card-wrapper">
+            <div class="fact-card glass-panel" id="about-fact-card">
+              <div class="fact-card-header">
+                <span class="fact-card-badge">KEY PROFILE HIGHLIGHTS</span>
+                <span class="fact-card-dot"></span>
+              </div>
+              <ul class="fact-list">
+                <li class="fact-item">
+                  <span class="fact-label">Based in</span>
+                  <span class="fact-value">Chennai, India</span>
+                </li>
+                <li class="fact-item">
+                  <span class="fact-label">Focus</span>
+                  <span class="fact-value">Web development</span>
+                </li>
+                <li class="fact-item">
+                  <span class="fact-label">Also</span>
+                  <span class="fact-value">Content creation and video editing</span>
+                </li>
+                <li class="fact-item">
+                  <span class="fact-label">Open to</span>
+                  <span class="fact-value highlight-value">Web and software development roles</span>
+                </li>
+              </ul>
+              <div class="fact-card-footer">
+                <span class="fact-status-chip">Ready for Opportunities</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 02 / SKILLS SECTION ==================== -->
+    <section id="skills" class="portfolio-section section-3d" aria-labelledby="skills-heading">
+      <!-- Outlined Ghost Word -->
+      <div class="ghost-word ghost-skills" aria-hidden="true">SKILLS</div>
+
+      <div class="section-container">
+        <!-- Section Header Label -->
+        <div class="section-label-wrap">
+          <span class="section-num-tag">02 / Expertise</span>
+          <h2 id="skills-heading" class="section-heading">Technical &amp; Creative Arsenal</h2>
+        </div>
+
+        <!-- 3 3D Cards Swinging in -->
+        <div class="skills-grid">
+          <!-- Card 1: Frontend -->
+          <div class="skill-card-3d-wrap">
+            <article class="skill-card glass-panel">
+              <div class="skill-card-icon-box">
+                <span class="skill-card-icon">⚡</span>
+              </div>
+              <h3 class="skill-card-title">Frontend</h3>
+              <p class="skill-card-desc">Building responsive, pixel-perfect, and dynamic user interfaces with clean
+                architecture.</p>
+              <ul class="skill-tags">
+                <li class="skill-chip">HTML5</li>
+                <li class="skill-chip">CSS3</li>
+                <li class="skill-chip">JavaScript</li>
+                <li class="skill-chip">Bootstrap</li>
+                <li class="skill-chip">DOM manipulation</li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- Card 2: Code and workflow -->
+          <div class="skill-card-3d-wrap">
+            <article class="skill-card glass-panel">
+              <div class="skill-card-icon-box">
+                <span class="skill-card-icon">🛠️</span>
+              </div>
+              <h3 class="skill-card-title">Code &amp; Workflow</h3>
+              <p class="skill-card-desc">Core programming foundations, version control workflows, and debugging
+                expertise.</p>
+              <ul class="skill-tags">
+                <li class="skill-chip">Java</li>
+                <li class="skill-chip">Git</li>
+                <li class="skill-chip">GitHub</li>
+                <li class="skill-chip">Browser DevTools</li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- Card 3: Creator -->
+          <div class="skill-card-3d-wrap">
+            <article class="skill-card glass-panel">
+              <div class="skill-card-icon-box">
+                <span class="skill-card-icon">🎬</span>
+              </div>
+              <h3 class="skill-card-title">Creator</h3>
+              <p class="skill-card-desc">Storytelling through high-retention short-form video edits and engaging media.
+              </p>
+              <ul class="skill-tags">
+                <li class="skill-chip">Content creation</li>
+                <li class="skill-chip">Video editing</li>
+                <li class="skill-chip">Reels</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 03 / WORK (PROJECTS) SECTION ==================== -->
+    <section id="projects" class="portfolio-section section-3d" aria-labelledby="work-heading">
+      <!-- Outlined Ghost Word -->
+      <div class="ghost-word ghost-work" aria-hidden="true">WORK</div>
+
+      <div class="section-container">
+        <!-- Section Header Label -->
+        <div class="section-label-wrap">
+          <span class="section-num-tag">03 / Selected projects</span>
+          <h2 id="work-heading" class="section-heading">Featured Works</h2>
+        </div>
+
+        <div class="projects-list">
+          <!-- Project Card 1: SriMart -->
+          <article class="project-card-3d-wrap project-card-left" id="project-srimart">
+            <div class="project-card glass-panel">
+              <!-- Browser Mockup Window -->
+              <div class="browser-frame">
+                <div class="browser-header">
+                  <div class="browser-dots" aria-hidden="true">
+                    <span class="dot dot-close"></span>
+                    <span class="dot dot-minimize"></span>
+                    <span class="dot dot-expand"></span>
+                  </div>
+                  <div class="browser-address-bar">
+                    <span class="lock-icon" aria-hidden="true">🔒</span>
+                    <span class="address-url">https://srimart.netlify.app</span>
+                  </div>
+                </div>
+                <div class="browser-preview-container tilt-interactive">
+                  <img src="assets/srimart-preview.svg" alt="SriMart E-commerce Website Live Preview Mockup"
+                    class="project-preview-img" width="800" height="500" loading="lazy">
+                  <div class="preview-overlay">
+                    <a href="https://srimart.netlify.app" target="_blank" rel="noopener noreferrer"
+                      class="preview-btn">Open Preview ↗</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Project Meta & Details -->
+              <div class="project-content">
+                <div class="project-tag-num">PROJECT // 01</div>
+                <h3 class="project-title">SriMart</h3>
+                <p class="project-description">
+                  An e-commerce website built with HTML, CSS, and JavaScript. Features modern product catalogs,
+                  interactive cart functionality, dynamic filtering, and a clean, responsive shopping experience.
+                </p>
+                <div class="project-tech-chips">
+                  <span class="tech-chip">HTML5</span>
+                  <span class="tech-chip">CSS3</span>
+                  <span class="tech-chip">JavaScript</span>
+                  <span class="tech-chip">Netlify</span>
+                </div>
+                <div class="project-actions">
+                  <a href="https://srimart.netlify.app" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-primary project-btn">
+                    <span>View live site</span>
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+                      <path
+                        d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project Card 2: Restaurant Project -->
+          <article class="project-card-3d-wrap project-card-right" id="project-restaurant">
+            <div class="project-card glass-panel">
+              <!-- Browser Mockup Window -->
+              <div class="browser-frame">
+                <div class="browser-header">
+                  <div class="browser-dots" aria-hidden="true">
+                    <span class="dot dot-close"></span>
+                    <span class="dot dot-minimize"></span>
+                    <span class="dot dot-expand"></span>
+                  </div>
+                  <div class="browser-address-bar">
+                    <span class="lock-icon" aria-hidden="true">🔒</span>
+                    <span class="address-url">https://srinath678-k.github.io/restaurant-project/</span>
+                  </div>
+                </div>
+                <div class="browser-preview-container tilt-interactive">
+                  <img src="assets/restaurant-preview.svg" alt="Restaurant Project Showcase Preview Mockup"
+                    class="project-preview-img" width="800" height="500" loading="lazy">
+                  <div class="preview-overlay">
+                    <a href="https://srinath678-k.github.io/restaurant-project/" target="_blank"
+                      rel="noopener noreferrer" class="preview-btn">Open Preview ↗</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Project Meta & Details -->
+              <div class="project-content">
+                <div class="project-tag-num">PROJECT // 02</div>
+                <h3 class="project-title">Restaurant Project</h3>
+                <p class="project-description">
+                  A responsive restaurant website showcasing menu design, layout structure, and user-friendly
+                  navigation. Built to present culinary experiences with aesthetic elegance and fluid mobile
+                  accessibility.
+                </p>
+                <div class="project-tech-chips">
+                  <span class="tech-chip">HTML5</span>
+                  <span class="tech-chip">CSS3</span>
+                  <span class="tech-chip">JavaScript</span>
+                  <span class="tech-chip">GitHub Pages</span>
+                </div>
+                <div class="project-actions">
+                  <a href="https://srinath678-k.github.io/restaurant-project/" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-primary project-btn">
+                    <span>View live site</span>
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+                      <path
+                        d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 04 / CREATOR SECTION ==================== -->
+    <section id="creator" class="portfolio-section section-3d" aria-labelledby="creator-heading">
+      <!-- Outlined Ghost Word -->
+      <div class="ghost-word ghost-create" aria-hidden="true">CREATE</div>
+
+      <div class="section-container">
+        <!-- Section Header Label -->
+        <div class="section-label-wrap">
+          <span class="section-num-tag">04 / Content &amp; Media</span>
+          <h2 id="creator-heading" class="section-heading">Behind the edit.</h2>
+        </div>
+
+        <div class="creator-layout">
+          <!-- Text and Action -->
+          <div class="creator-intro">
+            <p class="lead-paragraph">
+              Alongside code, I create content and edit videos. The habits carry over: sharp pacing, clean detail and a
+              clear story from the first frame to the last.
+            </p>
+            <div class="creator-action">
+              <a href="https://www.instagram.com/bros_cutz_ss/" target="_blank" rel="noopener noreferrer"
+                class="btn btn-primary">
+                <span>Follow @bros_cutz_ss</span>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Three 3D Tilted Phone Frames (Fanned Out) + See More Button -->
+          <div class="creator-showcase-column">
+            <div class="creator-phones-stage" id="creator-phones-stage">
+              <!-- Phone 1 (Left tilt) - Post 01 -->
+              <a href="https://www.instagram.com/p/DadoYZryThS/" target="_blank" rel="noopener noreferrer"
+                class="phone-frame-3d phone-left" id="phone-frame-1"
+                aria-label="Open Instagram post by bros_cutz_ss (opens in a new tab)"
+                data-title="MS Dhoni Mural Edit // 01"
+                data-software="CapCut, Premiere Pro"
+                data-notes="Cinematic video edit highlighting cricket legend MS Dhoni's artwork with dynamic pacing and mood lighting."
+                data-thumb="assets/images/media-01.jpg">
+                <div class="phone-frame">
+                  <div class="phone-notch"></div>
+                  <div class="phone-screen">
+                    <!-- Real Thumbnail Image -->
+                    <img src="assets/images/media-01.jpg" alt="Dhoni mural inspiration post by bros_cutz_ss"
+                      class="phone-thumb-img" width="360" height="640" loading="lazy" decoding="async">
+                    <!-- Dark Gradient Vignette for Readability -->
+                    <div class="phone-screen-overlay" aria-hidden="true"></div>
+                    <!-- Interactive Action Pill -->
+                    <span class="phone-badge-link">
+                      <svg class="instagram-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor"
+                        aria-hidden="true">
+                        <path
+                          d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                      </svg>
+                      <span>View post</span>
+                      <svg class="arrow-icon" viewBox="0 0 20 20" width="12" height="12" fill="currentColor"
+                        aria-hidden="true">
+                        <path fill-rule="evenodd"
+                          d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+
+              <!-- Phone 2 (Center) - Reel 02 -->
+              <a href="https://www.instagram.com/reel/DWNvsrAEvjc/" target="_blank" rel="noopener noreferrer"
+                class="phone-frame-3d phone-center" id="phone-frame-2"
+                aria-label="Open Instagram reel by bros_cutz_ss (opens in a new tab)"
+                data-title="Dhoni Aura & Trophies Reel // 02"
+                data-software="CapCut, Premiere Pro"
+                data-notes="High-energy short-form edit focused on trophy moments, beat synchronization, and visual effects."
+                data-thumb="assets/images/media-02.jpg">
+                <div class="phone-frame">
+                  <div class="phone-notch"></div>
+                  <div class="phone-screen">
+                    <!-- Real Thumbnail Image -->
+                    <img src="assets/images/media-02.jpg" alt="Dhoni aura trophies reel by bros_cutz_ss"
+                      class="phone-thumb-img" width="360" height="640" loading="lazy" decoding="async">
+                    <!-- Dark Gradient Vignette -->
+                    <div class="phone-screen-overlay" aria-hidden="true"></div>
+                    <!-- Centered Play Button on Reel -->
+                    <div class="phone-center-play" aria-hidden="true">
+                      <span class="play-btn-circle">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                          <polygon points="8,5 19,12 8,19" />
+                        </svg>
+                      </span>
+                    </div>
+                    <!-- Interactive Action Pill -->
+                    <span class="phone-badge-link">
+                      <svg class="instagram-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor"
+                        aria-hidden="true">
+                        <path
+                          d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                      </svg>
+                      <span>View reel</span>
+                      <svg class="arrow-icon" viewBox="0 0 20 20" width="12" height="12" fill="currentColor"
+                        aria-hidden="true">
+                        <path fill-rule="evenodd"
+                          d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+
+              <!-- Phone 3 (Right tilt) - Post 03 -->
+              <a href="https://www.instagram.com/p/DaV1OKFkos3/" target="_blank" rel="noopener noreferrer"
+                class="phone-frame-3d phone-right" id="phone-frame-3"
+                aria-label="Open Instagram post by bros_cutz_ss (opens in a new tab)"
+                data-title="CSK Flag Edit // 03"
+                data-software="CapCut, Photoshop"
+                data-notes="Creative media composition celebrating team spirit with color contrast and dynamic framing."
+                data-thumb="assets/images/media-03.jpg">
+                <div class="phone-frame">
+                  <div class="phone-notch"></div>
+                  <div class="phone-screen">
+                    <!-- Real Thumbnail Image -->
+                    <img src="assets/images/media-03.jpg" alt="Chennai Super Kings flag post by bros_cutz_ss"
+                      class="phone-thumb-img" width="360" height="640" loading="lazy" decoding="async">
+                    <!-- Dark Gradient Vignette -->
+                    <div class="phone-screen-overlay" aria-hidden="true"></div>
+                    <!-- Interactive Action Pill -->
+                    <span class="phone-badge-link">
+                      <svg class="instagram-icon" viewBox="0 0 24 24" width="13" height="13" fill="currentColor"
+                        aria-hidden="true">
+                        <path
+                          d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                      </svg>
+                      <span>View post</span>
+                      <svg class="arrow-icon" viewBox="0 0 20 20" width="12" height="12" fill="currentColor"
+                        aria-hidden="true">
+                        <path fill-rule="evenodd"
+                          d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z"
+                          clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- More Action Button below the 3 phone cards -->
+            <div class="creator-more-action">
+              <a href="https://www.instagram.com/bros_cutz_ss/" target="_blank" rel="noopener noreferrer"
+                class="btn btn-secondary creator-more-btn">
+                <span>See more on Instagram</span>
+                <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+                  <path
+                    d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 05 / EDUCATION SECTION ==================== -->
+    <section id="education" class="portfolio-section section-3d" aria-labelledby="education-heading">
+      <!-- Outlined Ghost Word -->
+      <div class="ghost-word ghost-learn" aria-hidden="true">LEARN</div>
+
+      <div class="section-container">
+        <!-- Section Header Label -->
+        <div class="section-label-wrap">
+          <span class="section-num-tag">05 / Journey</span>
+          <h2 id="education-heading" class="section-heading">Education &amp; Credentials</h2>
+        </div>
+
+        <!-- Vertical Timeline (latest first) -->
+        <div class="timeline-container">
+          <!-- Scroll-driven Animated Line Track -->
+          <div class="timeline-line-track" aria-hidden="true">
+            <div class="timeline-line-fill" id="timeline-line-fill"></div>
+          </div>
+
+          <!-- Timeline Items List -->
+          <div class="timeline-items">
+            <!-- Item 1: MCA -->
+            <div class="timeline-item">
+              <div class="timeline-marker" aria-hidden="true">
+                <span class="marker-pulse"></span>
+              </div>
+              <div class="timeline-card glass-panel">
+                <div class="timeline-date-chip">CURRENTLY PURSUING</div>
+                <h3 class="timeline-title">Master of Computer Applications (MCA)</h3>
+                <p class="timeline-institution">SM Distance Education</p>
+                <p class="timeline-desc">
+                  Advancing core computer applications, software engineering principles, advanced database management,
+                  and web architectures.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 2: BCA -->
+            <div class="timeline-item">
+              <div class="timeline-marker" aria-hidden="true">
+                <span class="marker-pulse"></span>
+              </div>
+              <div class="timeline-card glass-panel">
+                <div class="timeline-date-chip">GRADUATED 2026</div>
+                <h3 class="timeline-title">Bachelor of Computer Applications (BCA)</h3>
+                <p class="timeline-institution">Apollo Arts and Science College, University of Madras, Chennai</p>
+                <p class="timeline-desc">
+                  Graduated in 2026. Built foundational skills in computer science, object-oriented programming, data
+                  structures, and web technologies.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 3: Java Certification -->
+            <div class="timeline-item">
+              <div class="timeline-marker" aria-hidden="true">
+                <span class="marker-pulse"></span>
+              </div>
+              <div class="timeline-card glass-panel">
+                <div class="timeline-date-chip">04 AUG 2025 — 02 NOV 2025</div>
+                <h3 class="timeline-title">Certification: Java Programming</h3>
+                <p class="timeline-institution">NU TECH Computer Education</p>
+                <p class="timeline-desc">
+                  Comprehensive professional training covering Core Java, OOP concepts, exception handling,
+                  multithreading, collections framework, and backend problem solving.
+                </p>
+              </div>
+            </div>
+
+            <!-- Item 4: Higher Secondary -->
+            <div class="timeline-item">
+              <div class="timeline-marker" aria-hidden="true">
+                <span class="marker-pulse"></span>
+              </div>
+              <div class="timeline-card glass-panel">
+                <div class="timeline-date-chip">COMPLETED</div>
+                <h3 class="timeline-title">Higher Secondary Education</h3>
+                <p class="timeline-institution">St. John's Matriculation Higher Secondary School</p>
+                <p class="timeline-desc">
+                  Secondary school education completing academic foundations in computer application.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 06 / CONTACT SECTION ==================== -->
+    <section id="contact" class="portfolio-section section-3d" aria-labelledby="contact-heading">
+      <!-- Outlined Ghost Word -->
+      <div class="ghost-word ghost-contact" aria-hidden="true">CONTACT</div>
+
+      <div class="section-container">
+        <!-- Section Header Label -->
+        <div class="section-label-wrap">
+          <span class="section-num-tag">06 / Connect</span>
+          <h2 id="contact-heading" class="section-heading">Let's work together.</h2>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Left Column: Opportunities & Details -->
+          <div class="contact-info-block">
+            <p class="lead-paragraph">
+              Have a project, opportunity, or collaboration in mind? I'd love to connect.
+            </p>
+            <p>
+              I'm currently open to Web Development and Software Development opportunities where I can contribute my
+              skills, work on real-world projects, and continue growing as a developer.
+            </p>
+
+            <!-- Direct Contact List -->
+            <div class="contact-methods">
+              <a href="mailto:ksrinath14307@gmail.com" class="contact-method-card glass-panel">
+                <span class="method-icon">✉️</span>
+                <div class="method-details">
+                  <span class="method-label">Email</span>
+                  <span class="method-val">ksrinath14307@gmail.com</span>
+                </div>
+              </a>
+
+              <a href="tel:+919363652735" class="contact-method-card glass-panel">
+                <span class="method-icon">📞</span>
+                <div class="method-details">
+                  <span class="method-label">Phone</span>
+                  <span class="method-val">+91 93636 52735</span>
+                </div>
+              </a>
+
+              <div class="contact-method-card glass-panel">
+                <span class="method-icon">📍</span>
+                <div class="method-details">
+                  <span class="method-label">Location</span>
+                  <span class="method-val">Chennai, India</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Links Group -->
+            <div class="social-links-group">
+              <span class="social-title">Connect with me:</span>
+              <div class="social-buttons">
+                <a href="https://www.linkedin.com/in/srinath007" target="_blank" rel="noopener noreferrer"
+                  class="social-btn" aria-label="LinkedIn Profile">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                    <path
+                      d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.55a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24z" />
+                  </svg>
+                  <span>LinkedIn</span>
+                </a>
+
+                <a href="https://github.com/srinath678-k" target="_blank" rel="noopener noreferrer" class="social-btn"
+                  aria-label="GitHub Profile">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                  </svg>
+                  <span>GitHub</span>
+                </a>
+
+                <a href="https://www.instagram.com/bros_cutz_ss/" target="_blank" rel="noopener noreferrer"
+                  class="social-btn" aria-label="Instagram Profile">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+                    <path
+                      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  </svg>
+                  <span>Instagram</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive Contact Form -->
+          <div class="contact-form-block">
+            <div class="contact-form-card glass-panel">
+              <h3 class="form-title">Get in touch</h3>
+              <p class="form-subtitle">Fill out the form below to initiate an email directly to my inbox.</p>
+
+              <form id="contact-form" class="contact-form" novalidate>
+                <!-- Name Input -->
+                <div class="form-group">
+                  <label for="contact-name" class="form-label">Your Name <span class="required"
+                      aria-hidden="true">*</span></label>
+                  <input type="text" id="contact-name" name="name" class="form-input" placeholder="e.g. Alex Morgan"
+                    required autocomplete="name">
+                  <span class="field-error" id="name-error" aria-live="polite"></span>
+                </div>
+
+                <!-- Email Input -->
+                <div class="form-group">
+                  <label for="contact-email" class="form-label">Your Email <span class="required"
+                      aria-hidden="true">*</span></label>
+                  <input type="email" id="contact-email" name="email" class="form-input"
+                    placeholder="e.g. alex@example.com" required autocomplete="email">
+                  <span class="field-error" id="email-error" aria-live="polite"></span>
+                </div>
+
+                <!-- Message Input -->
+                <div class="form-group">
+                  <label for="contact-message" class="form-label">Your Message <span class="required"
+                      aria-hidden="true">*</span></label>
+                  <textarea id="contact-message" name="message" class="form-textarea" rows="4"
+                    placeholder="Tell me about your project, role, or collaboration idea..." required></textarea>
+                  <span class="field-error" id="message-error" aria-live="polite"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary form-submit-btn" id="submit-btn">
+                  <span>Send Message</span>
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
+                    <path
+                      d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                  </svg>
+                </button>
+
+                <!-- Aria Live Status Feedback -->
+                <div id="form-status" class="form-status-alert" role="status" aria-live="polite"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <p class="copyright">© 2026 Srinath K. All rights reserved.</p>
+        <p class="footer-subtext">Designed &amp; Built with clean code &amp; 3D motion.</p>
+      </div>
+
+      <div class="footer-right">
+        <a href="#hero" class="back-to-top" id="back-to-top" aria-label="Scroll back to top">
+          <span>Back to top</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+            <path fill-rule="evenodd"
+              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+              clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  <!-- Video / Reel Lightbox Modal -->
+  <div id="media-modal" class="cinematic-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="media-modal-title">
+    <div class="cinematic-modal__backdrop" data-modal-close></div>
+    <div class="cinematic-modal__panel">
+      <button class="cinematic-modal__close" data-modal-close aria-label="Close">&times;</button>
+      <div class="cinematic-modal__media"><!-- thumbnail image goes here --></div>
+      <h3 id="media-modal-title" class="cinematic-modal__title"></h3>
+      <div class="cinematic-modal__tags"></div>
+      <p class="cinematic-modal__notes"></p>
+      <a class="btn btn-primary cinematic-modal__link" target="_blank" rel="noopener noreferrer">Open on Instagram</a>
+    </div>
+  </div>
+
+</body>
+
+</html>

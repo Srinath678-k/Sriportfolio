@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="restBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#140f0c" />
+      <stop offset="50%" stop-color="#0a0706" />
+      <stop offset="100%" stop-color="#040302" />
+    </linearGradient>
+    <linearGradient id="restGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffe7b8" />
+      <stop offset="50%" stop-color="#e5a93b" />
+      <stop offset="100%" stop-color="#b07314" />
+    </linearGradient>
+    <radialGradient id="plateGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e5a93b" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#restBg)" />
+
+  <!-- Navbar Mockup -->
+  <rect x="0" y="0" width="800" height="60" fill="#090605" opacity="0.95" />
+  <text x="40" y="38" font-family="'Anton', sans-serif" font-size="22" fill="#ffffff" letter-spacing="3">L'ATELIER <tspan fill="#e5a93b">CULINAIRE</tspan></text>
+  
+  <g transform="translate(360, 36)" font-family="'Manrope', sans-serif" font-size="12" fill="#a89f91" font-weight="600">
+    <text x="0" y="0" fill="#ffffff">MENU</text>
+    <text x="70" y="0">EXPERIENCE</text>
+    <text x="175" y="0">CHEF'S TABLE</text>
+  </g>
+
+  <rect x="650" y="16" width="110" height="28" rx="4" fill="none" stroke="url(#restGold)" stroke-width="1.5" />
+  <text x="672" y="35" font-family="'Manrope', sans-serif" font-size="10" font-weight="800" fill="#e5a93b" letter-spacing="1">RESERVE</text>
+
+  <!-- Hero Banner Showcase -->
+  <g transform="translate(40, 90)">
+    <text x="0" y="30" font-family="'Manrope', sans-serif" font-size="12" font-weight="700" fill="#e5a93b" letter-spacing="3">FINE ARTISANAL DINING</text>
+    <text x="0" y="75" font-family="'Anton', sans-serif" font-size="42" fill="#ffffff" letter-spacing="1">EXPERIENCE FLAVORS REDEFINED</text>
+    <text x="0" y="110" font-family="'Manrope', sans-serif" font-size="13" fill="#a89f91">A harmonious fusion of heritage gastronomy and contemporary culinary precision.</text>
+
+    <!-- Dish Showcase / Decorative Plating Art -->
+    <g transform="translate(480, -10)">
+      <circle cx="130" cy="110" r="120" fill="url(#plateGlow)" />
+      <circle cx="130" cy="110" r="95" fill="#181310" stroke="url(#restGold)" stroke-width="2" />
+      <circle cx="130" cy="110" r="75" fill="#241b16" />
+      <circle cx="130" cy="110" r="40" fill="#3a2b22" />
+      <circle cx="130" cy="110" r="16" fill="#e5a93b" opacity="0.8" />
+      <path d="M 100 80 Q 130 50 160 80 Q 180 120 130 150 Q 90 120 100 80" fill="none" stroke="#e5a93b" stroke-width="2" />
+    </g>
+
+    <!-- CTA & Badges -->
+    <rect x="0" y="140" width="140" height="38" rx="6" fill="url(#restGold)" />
+    <text x="24" y="164" font-family="'Manrope', sans-serif" font-size="12" font-weight="800" fill="#060403">VIEW TASTING MENU</text>
+
+    <rect x="155" y="140" width="130" height="38" rx="6" fill="#181310" stroke="#3d2f23" stroke-width="1" />
+    <text x="180" y="164" font-family="'Manrope', sans-serif" font-size="12" font-weight="700" fill="#ffffff">OUR STORY</text>
+  </g>
+
+  <!-- Menu Highlights Carousel -->
+  <g transform="translate(40, 310)">
+    <!-- Course 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="220" height="150" rx="10" fill="#140f0c" stroke="#2b2017" stroke-width="1" />
+      <text x="20" y="35" font-family="'Anton', sans-serif" font-size="16" fill="#ffffff">SMOKED TRUFFLE CARPACCIO</text>
+      <text x="20" y="60" font-family="'Manrope', sans-serif" font-size="11" fill="#8c8275">Aged balsamic, parmesan crisp, winter greens</text>
+      <text x="20" y="120" font-family="'Manrope', sans-serif" font-size="13" font-weight="800" fill="#e5a93b">₹ 1,450</text>
+    </g>
+
+    <!-- Course 2 -->
+    <g transform="translate(250, 0)">
+      <rect width="220" height="150" rx="10" fill="#140f0c" stroke="#2b2017" stroke-width="1" />
+      <text x="20" y="35" font-family="'Anton', sans-serif" font-size="16" fill="#ffffff">ROASTED ARTISAN RISOTTO</text>
+      <text x="20" y="60" font-family="'Manrope', sans-serif" font-size="11" fill="#8c8275">Wild forest morels, saffron emulsion, sage</text>
+      <text x="20" y="120" font-family="'Manrope', sans-serif" font-size="13" font-weight="800" fill="#e5a93b">₹ 1,850</text>
+    </g>
+
+    <!-- Course 3 -->
+    <g transform="translate(500, 0)">
+      <rect width="220" height="150" rx="10" fill="#140f0c" stroke="#2b2017" stroke-width="1" />
+      <text x="20" y="35" font-family="'Anton', sans-serif" font-size="16" fill="#ffffff">GOLD-DUSTED SOUFFLÉ</text>
+      <text x="20" y="60" font-family="'Manrope', sans-serif" font-size="11" fill="#8c8275">70% Madagascar cocoa, Bourbon vanilla bean</text>
+      <text x="20" y="120" font-family="'Manrope', sans-serif" font-size="13" font-weight="800" fill="#e5a93b">₹ 1,200</text>
+    </g>
+  </g>
+</svg>

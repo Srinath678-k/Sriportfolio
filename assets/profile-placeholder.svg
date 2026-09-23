@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121624" />
+      <stop offset="50%" stop-color="#090b12" />
+      <stop offset="100%" stop-color="#040508" />
+    </linearGradient>
+
+    <!-- Gold Accent Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffe3a0" />
+      <stop offset="50%" stop-color="#f2b636" />
+      <stop offset="100%" stop-color="#b9791a" />
+    </linearGradient>
+
+    <!-- Gold Glow Filter -->
+    <filter id="goldGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Intense Rim Glow -->
+    <filter id="rimGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feColorMatrix type="matrix" values="
+        1 0 0 0 0.95
+        0 1 0 0 0.75
+        0 0 1 0 0.22
+        0 0 0 1 0" result="goldMatrix"/>
+      <feMerge>
+        <feMergeNode in="goldMatrix" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Ambient Radial Glow -->
+    <radialGradient id="ambientGlow" cx="50%" cy="38%" r="45%">
+      <stop offset="0%" stop-color="#f2b636" stop-opacity="0.32" />
+      <stop offset="50%" stop-color="#b9791a" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#06070b" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Silhouette Linear Gradient -->
+    <linearGradient id="silhouetteGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a1f30" />
+      <stop offset="60%" stop-color="#101422" />
+      <stop offset="100%" stop-color="#080a10" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Card Base -->
+  <rect width="500" height="650" rx="24" fill="url(#bgGrad)" />
+
+  <!-- Ambient Golden Glow behind Head -->
+  <circle cx="250" cy="270" r="190" fill="url(#ambientGlow)" />
+
+  <!-- Decorative Tech Grid & Orbit Circles -->
+  <g opacity="0.18" stroke="#f2b636" stroke-width="1" fill="none">
+    <circle cx="250" cy="270" r="140" stroke-dasharray="4 8" />
+    <circle cx="250" cy="270" r="185" stroke-dasharray="12 16" />
+    <circle cx="250" cy="270" r="230" stroke-dasharray="2 6" />
+    <line x1="50" y1="270" x2="450" y2="270" stroke-dasharray="6 6" />
+    <line x1="250" y1="70" x2="250" y2="470" stroke-dasharray="6 6" />
+  </g>
+
+  <!-- Silhouette Back-Rim Golden Outline Glow -->
+  <g filter="url(#goldGlow)" opacity="0.85">
+    <!-- Shoulder & Body Rim -->
+    <path d="M 100 650 C 105 520, 155 455, 200 425 C 190 395, 185 365, 185 320 C 185 220, 215 155, 250 155 C 285 155, 315 220, 315 320 C 315 365, 310 395, 300 425 C 345 455, 395 520, 400 650 Z"
+          fill="none" stroke="url(#goldGrad)" stroke-width="6" />
+  </g>
+
+  <!-- Dark Portrait Silhouette Base -->
+  <g id="portrait-silhouette">
+    <!-- Body / Shoulders -->
+    <path d="M 90 650 C 95 505, 150 445, 195 415 C 205 425, 225 435, 250 435 C 275 435, 295 425, 305 415 C 350 445, 405 505, 410 650 Z"
+          fill="url(#silhouetteGrad)" />
+
+    <!-- Neck -->
+    <path d="M 215 370 L 215 425 C 225 433, 240 438, 250 438 C 260 438, 275 433, 285 425 L 285 370 Z"
+          fill="#101422" />
+
+    <!-- Head & Face Profile Silhouette -->
+    <path d="M 250 160 C 205 160, 185 205, 185 265 C 185 315, 195 348, 208 375 C 218 395, 235 408, 250 408 C 265 408, 282 395, 292 375 C 305 348, 315 315, 315 265 C 315 205, 295 160, 250 160 Z"
+          fill="url(#silhouetteGrad)" />
+
+    <!-- Stylized Modern Hairline Silhouette -->
+    <path d="M 250 152 C 220 152, 192 165, 180 195 C 172 215, 175 240, 178 250 C 185 230, 195 210, 215 198 C 235 185, 265 185, 290 198 C 305 208, 318 228, 322 250 C 325 240, 328 215, 320 195 C 308 165, 280 152, 250 152 Z"
+          fill="#0a0c14" />
+
+    <!-- Stylized Studio Headphones / Tech Accent -->
+    <path d="M 180 260 C 170 260, 162 272, 162 290 C 162 308, 170 320, 180 320 C 186 320, 190 312, 190 290 C 190 268, 186 260, 180 260 Z"
+          fill="#1c2234" stroke="url(#goldGrad)" stroke-width="2" />
+    <path d="M 320 260 C 330 260, 338 272, 338 290 C 338 308, 330 320, 320 320 C 314 320, 310 312, 310 290 C 310 268, 314 260, 320 260 Z"
+          fill="#1c2234" stroke="url(#goldGrad)" stroke-width="2" />
+    <path d="M 172 270 C 172 205, 205 175, 250 175 C 295 175, 328 205, 328 270"
+          fill="none" stroke="#252c42" stroke-width="6" stroke-linecap="round" />
+    <path d="M 172 270 C 172 205, 205 175, 250 175 C 295 175, 328 205, 328 270"
+          fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="8 20" stroke-linecap="round" />
+  </g>
+
+  <!-- Crisp Gold Edge Rim Highlights -->
+  <g filter="url(#rimGlow)">
+    <!-- Right side edge highlight -->
+    <path d="M 314 220 C 318 250, 318 280, 314 310 C 308 348, 296 375, 288 392"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+    <!-- Left side subtle rim -->
+    <path d="M 186 220 C 182 250, 182 280, 186 310 C 192 348, 204 375, 212 392"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+    <!-- Right Collar Edge -->
+    <path d="M 305 415 C 335 435, 375 480, 395 570"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3.5" stroke-linecap="round" opacity="0.85" />
+    <!-- Left Collar Edge -->
+    <path d="M 195 415 C 165 435, 125 480, 105 570"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3.5" stroke-linecap="round" opacity="0.85" />
+  </g>
+
+  <!-- Tech Geometric Framing Accents -->
+  <g stroke="url(#goldGrad)" stroke-width="2" fill="none" opacity="0.75">
+    <!-- Top-Left Corner Bracket -->
+    <path d="M 30 55 L 30 30 L 55 30" />
+    <!-- Top-Right Corner Bracket -->
+    <path d="M 470 55 L 470 30 L 445 30" />
+    <!-- Bottom-Left Corner Bracket -->
+    <path d="M 30 595 L 30 620 L 55 620" />
+    <!-- Bottom-Right Corner Bracket -->
+    <path d="M 470 595 L 470 620 L 445 620" />
+
+    <!-- Crosshair Marks -->
+    <path d="M 25 325 L 35 325 M 30 320 L 30 330" />
+    <path d="M 465 325 L 475 325 M 470 320 L 470 330" />
+  </g>
+
+  <!-- Bottom Gradient Vignette to blend smoothly with cards -->
+  <rect y="480" width="500" height="170" fill="url(#bgGrad)" opacity="0.85" />
+
+  <!-- Holographic Label Tag Badge -->
+  <g transform="translate(160, 580)">
+    <rect width="180" height="34" rx="17" fill="#0b0e18" stroke="url(#goldGrad)" stroke-width="1.5" />
+    <circle cx="22" cy="17" r="4" fill="#f2b636" filter="url(#goldGlow)" />
+    <text x="36" y="22" font-family="'Manrope', -apple-system, sans-serif" font-size="11" font-weight="700" fill="#ffe3a0" letter-spacing="2">SRINATH K // DEV</text>
+  </g>
+</svg>
