@@ -1,2 +1,0 @@
-# Sriportfolio
-cinematic portfolio

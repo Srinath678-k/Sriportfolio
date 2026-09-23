@@ -1,3 +1,6 @@
+
+
+
 /**
  * ============================================================================
  * CINEMATIC 3D SCROLL-DRIVEN PORTFOLIO - JAVASCRIPT ENGINE
@@ -8,6 +11,23 @@
 
 (function () {
   'use strict';
+
+  // --------------------------------------------------------------------------
+  // 0. QUICK PRELOADER CONTROLLER (0.5s FAST TRANSITION)
+  // --------------------------------------------------------------------------
+  const quickPreloader = document.getElementById('quick-preloader');
+  if (quickPreloader) {
+    const hidePreloader = () => {
+      if (!quickPreloader.classList.contains('loaded')) {
+        quickPreloader.classList.add('loaded');
+        setTimeout(() => {
+          if (quickPreloader.parentNode) quickPreloader.parentNode.removeChild(quickPreloader);
+        }, 400);
+      }
+    };
+    window.addEventListener('load', () => setTimeout(hidePreloader, 450));
+    setTimeout(hidePreloader, 550);
+  }
 
   // --------------------------------------------------------------------------
   // 1. THEME CONTROLLER (GOLD / RED ACCENT) WITH LOCALSTORAGE PERSISTENCE
@@ -287,66 +307,73 @@
 
 
   // --------------------------------------------------------------------------
-  // 7. DESKTOP 3D MOUSE TILT INTERACTION
+  // 7. 3D TILT INTERACTION ENGINE (DESKTOP & TOUCH MOBILE)
   // --------------------------------------------------------------------------
   const heroCard = document.getElementById('hero-photo-card');
+  const cardStage = document.getElementById('hero-3d-stage');
   const tiltElements = document.querySelectorAll('.tilt-interactive');
 
-  if (isFinePointer && window.innerWidth >= 1024) {
-    // Hero photo card 3D tilt tracking
-    if (heroCard) {
-      const cardStage = document.getElementById('hero-3d-stage');
-      if (cardStage) {
-        cardStage.addEventListener('mousemove', (e) => {
-          const rect = cardStage.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
+  function handle3DTilt(stageEl, cardEl, clientX, clientY, maxDeg = 14) {
+    if (!stageEl || !cardEl) return;
+    const rect = stageEl.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
 
-          const rotateX = ((y - centerY) / centerY) * -14;
-          const rotateY = ((x - centerX) / centerX) * 14;
+    const rotateX = ((y - centerY) / centerY) * -maxDeg;
+    const rotateY = ((x - centerX) / centerX) * maxDeg;
 
-          heroCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
-
-        cardStage.addEventListener('mouseleave', () => {
-          heroCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-          heroCard.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-        });
-
-        cardStage.addEventListener('mouseenter', () => {
-          heroCard.style.transition = 'none';
-        });
-      }
-    }
-
-    // Project preview browser mockups tilt tracking
-    tiltElements.forEach((container) => {
-      container.addEventListener('mousemove', (e) => {
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotX = ((y - centerY) / centerY) * -8;
-        const rotY = ((x - centerX) / centerX) * 8;
-
-        const img = container.querySelector('.project-preview-img');
-        if (img) {
-          img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.04)`;
-        }
-      });
-
-      container.addEventListener('mouseleave', () => {
-        const img = container.querySelector('.project-preview-img');
-        if (img) {
-          img.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
-        }
-      });
-    });
+    cardEl.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
   }
+
+  function reset3DTilt(cardEl) {
+    if (!cardEl) return;
+    cardEl.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    cardEl.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+  }
+
+  if (cardStage && heroCard) {
+    cardStage.addEventListener('mousemove', (e) => handle3DTilt(cardStage, heroCard, e.clientX, e.clientY, 14));
+    cardStage.addEventListener('mouseleave', () => reset3DTilt(heroCard));
+    cardStage.addEventListener('mouseenter', () => { heroCard.style.transition = 'none'; });
+
+    // Touch gesture support for mobile devices
+    cardStage.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        handle3DTilt(cardStage, heroCard, e.touches[0].clientX, e.touches[0].clientY, 10);
+      }
+    }, { passive: true });
+    cardStage.addEventListener('touchend', () => reset3DTilt(heroCard), { passive: true });
+  }
+
+  tiltElements.forEach((container) => {
+    const img = container.querySelector('.project-preview-img');
+    if (!img) return;
+
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const rotX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -8;
+      const rotY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 8;
+      img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.04)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      img.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+
+    container.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        const rect = container.getBoundingClientRect();
+        const rotX = ((e.touches[0].clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -6;
+        const rotY = ((e.touches[0].clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 6;
+        img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02)`;
+      }
+    }, { passive: true });
+    container.addEventListener('touchend', () => {
+      img.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+    }, { passive: true });
+  });
 
 
   // --------------------------------------------------------------------------
@@ -824,9 +851,6 @@
     const heroSection = document.getElementById('hero');
     if (!canvas || !heroSection) return;
 
-    // Skip particles on mobile screens under 480px width
-    if (window.innerWidth < 480) return;
-
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
@@ -836,7 +860,8 @@
     let animFrameId = null;
     let isVisible = false;
     let particles = [];
-    const particleCount = 30; // 28-35 soft gold dots
+    const isMobileDevice = window.innerWidth < 768;
+    const particleCount = isMobileDevice ? 16 : 30;
 
     // Cap devicePixelRatio at 1.5 max for optimal performance
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -925,10 +950,6 @@
     }
 
     window.addEventListener('resize', () => {
-      if (window.innerWidth < 480) {
-        stopAnimation();
-        return;
-      }
       resizeCanvas();
       createParticles();
     }, { passive: true });
