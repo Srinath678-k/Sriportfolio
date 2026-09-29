@@ -1,0 +1,1352 @@
+
+
+
+/**
+ * ============================================================================
+ * CINEMATIC 3D SCROLL-DRIVEN PORTFOLIO - JAVASCRIPT ENGINE
+ * Author: Srinath K (Web Developer & Content Creator)
+ * Technologies: Vanilla JS, GSAP 3.12, ScrollTrigger, CSS 3D Transforms
+ * ============================================================================
+ */
+
+(function () {
+  'use strict';
+
+  // --------------------------------------------------------------------------
+  // 0. QUICK PRELOADER CONTROLLER (0.5s FAST TRANSITION)
+  // --------------------------------------------------------------------------
+  const quickPreloader = document.getElementById('quick-preloader');
+  if (quickPreloader) {
+    const hidePreloader = () => {
+      if (!quickPreloader.classList.contains('loaded')) {
+        quickPreloader.classList.add('loaded');
+        setTimeout(() => {
+          if (quickPreloader.parentNode) quickPreloader.parentNode.removeChild(quickPreloader);
+        }, 400);
+      }
+    };
+    window.addEventListener('load', () => setTimeout(hidePreloader, 450));
+    setTimeout(hidePreloader, 550);
+  }
+
+  // --------------------------------------------------------------------------
+  // 1. THEME ACCENT CONTROLLER (4 THEME PROFILES: GOLD, RED, CYAN, VIOLET)
+  // --------------------------------------------------------------------------
+  const THEME_STORAGE_KEY = 'srinath_portfolio_theme';
+  const VALID_ACCENTS = ['gold', 'red', 'cyan', 'violet'];
+
+  // Meta theme-color map for mobile browsers
+  const THEME_META_COLORS = {
+    gold: '#06070b',
+    red: '#06070b',
+    cyan: '#050a0c',
+    violet: '#0a0714'
+  };
+
+  /**
+   * Applies the requested accent theme profile and persists in localStorage
+   * @param {string} accent - 'gold', 'red', 'cyan', or 'violet'
+   */
+  function setAccent(accent) {
+    const validAccent = VALID_ACCENTS.includes(accent) ? accent : 'gold';
+
+    // Update data-accent and data-theme attributes on <html> element
+    document.documentElement.setAttribute('data-accent', validAccent);
+    document.documentElement.setAttribute('data-theme', validAccent);
+
+    // Update <meta name="theme-color"> tag
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme && THEME_META_COLORS[validAccent]) {
+      metaTheme.setAttribute('content', THEME_META_COLORS[validAccent]);
+    }
+
+    // Update active visual state and aria-pressed on all theme dots
+    const allDots = document.querySelectorAll('.theme-dot, .accent, [data-accent], [data-set-theme]');
+    allDots.forEach((dot) => {
+      const dotTheme = dot.getAttribute('data-accent') || dot.getAttribute('data-set-theme');
+      const isSelected = dotTheme === validAccent;
+      dot.classList.toggle('active', isSelected);
+      dot.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+    });
+
+    // Save choice in localStorage safely inside try/catch block
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, validAccent);
+    } catch (err) {
+      console.warn('LocalStorage is not available to save theme preference:', err);
+    }
+  }
+
+  // Backwards compatibility helper
+  function setTheme(theme) {
+    setAccent(theme);
+  }
+
+  // Initialize theme from localStorage or default to gold
+  (function initTheme() {
+    let savedTheme = 'gold';
+    try {
+      savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'gold';
+    } catch (err) {
+      console.warn('LocalStorage inaccessible, using default gold theme:', err);
+    }
+    setAccent(savedTheme);
+
+    // Attach click listeners to all theme switchers
+    const allDots = document.querySelectorAll('.theme-dot, .accent, [data-accent], [data-set-theme]');
+    allDots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const selected = dot.getAttribute('data-accent') || dot.getAttribute('data-set-theme');
+        setAccent(selected);
+        if (typeof SoundEngine !== 'undefined' && SoundEngine.playConfirm) {
+          SoundEngine.playConfirm();
+        }
+      });
+    });
+  })();
+
+
+  // --------------------------------------------------------------------------
+  // 1.5 WEB AUDIO API SOUND LAYER (OPT-IN UI INTERACTION SOUNDS)
+  // --------------------------------------------------------------------------
+  const SOUND_STORAGE_KEY = 'srinath_portfolio_sound_muted';
+
+  const SoundEngine = (function () {
+    let audioCtx = null;
+    let isMuted = true; // Default MUTED on page load (opt-in)
+    let lastHoverTime = 0;
+    let lastClickTime = 0;
+
+    // Pitch multiplier based on active accent theme
+    const THEME_PITCH_MULT = {
+      gold: 1.0,
+      red: 0.95,
+      cyan: 1.25,
+      violet: 1.40
+    };
+
+    /**
+     * Lazily creates/resumes AudioContext only after real user gesture
+     */
+    function getContext() {
+      if (typeof window === 'undefined') return null;
+      if (!audioCtx) {
+        const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtxClass) return null;
+        audioCtx = new AudioCtxClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    /**
+     * Get active theme frequency pitch multiplier
+     */
+    function getPitchMultiplier() {
+      const activeTheme = document.documentElement.getAttribute('data-accent') ||
+                          document.documentElement.getAttribute('data-theme') || 'gold';
+      return THEME_PITCH_MULT[activeTheme] || 1.0;
+    }
+
+    /**
+     * Play soft "tick" tone on hover (short sine blip ~40ms, gain < 0.05)
+     */
+    function playHover() {
+      if (isMuted) return;
+      const now = Date.now();
+      if (now - lastHoverTime < 50) return; // Throttle hover spamming
+      lastHoverTime = now;
+
+      try {
+        const ctx = getContext();
+        if (!ctx || ctx.state !== 'running') return;
+
+        const mult = getPitchMultiplier();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        const startFreq = 480 * mult;
+        const endFreq = 360 * mult;
+
+        osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.04);
+
+        gain.gain.setValueAtTime(0.02, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.04);
+      } catch (e) {
+        // Fail silently if Web Audio API is blocked or unsupported
+      }
+    }
+
+    /**
+     * Play richer "confirm" tone on click/tap (two-note blip ~90ms, gain < 0.05)
+     */
+    function playConfirm() {
+      if (isMuted) return;
+      const now = Date.now();
+      if (now - lastClickTime < 80) return; // Throttle click spamming
+      lastClickTime = now;
+
+      try {
+        const ctx = getContext();
+        if (!ctx || ctx.state !== 'running') return;
+
+        const mult = getPitchMultiplier();
+        const note1Freq = 523.25 * mult; // C5
+        const note2Freq = 659.25 * mult; // E5
+
+        // Note 1
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(note1Freq, ctx.currentTime);
+        gain1.gain.setValueAtTime(0.03, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05);
+
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(ctx.currentTime);
+        osc1.stop(ctx.currentTime + 0.05);
+
+        // Note 2
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(note2Freq, ctx.currentTime + 0.035);
+        gain2.gain.setValueAtTime(0.035, ctx.currentTime + 0.035);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
+
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime + 0.035);
+        osc2.stop(ctx.currentTime + 0.09);
+      } catch (e) {
+        // Fail silently
+      }
+    }
+
+    /**
+     * Sets sound mute state, updates localStorage & UI buttons
+     */
+    function setMuted(muted) {
+      isMuted = !!muted;
+      try {
+        localStorage.setItem(SOUND_STORAGE_KEY, isMuted ? 'true' : 'false');
+      } catch (e) {}
+
+      // Update sound toggle buttons in UI
+      const soundBtns = document.querySelectorAll('.sound-toggle-btn');
+      soundBtns.forEach((btn) => {
+        btn.setAttribute('aria-pressed', isMuted ? 'false' : 'true');
+        btn.setAttribute('title', isMuted ? 'Enable UI Sounds' : 'Mute UI Sounds');
+        const mutedIcon = btn.querySelector('.sound-muted-icon');
+        const activeIcon = btn.querySelector('.sound-active-icon');
+        if (mutedIcon && activeIcon) {
+          mutedIcon.style.display = isMuted ? 'block' : 'none';
+          activeIcon.style.display = isMuted ? 'none' : 'block';
+        }
+      });
+    }
+
+    /**
+     * Initializes SoundEngine listeners
+     */
+    function init() {
+      // Load saved mute state (default to true / muted if not saved)
+      try {
+        const saved = localStorage.getItem(SOUND_STORAGE_KEY);
+        if (saved !== null) {
+          isMuted = saved === 'true';
+        } else {
+          isMuted = true;
+        }
+      } catch (e) {
+        isMuted = true;
+      }
+
+      setMuted(isMuted);
+
+      // Lazily initialize AudioContext on first user gesture anywhere
+      const unlockAudio = () => {
+        getContext();
+        window.removeEventListener('pointerdown', unlockAudio);
+        window.removeEventListener('keydown', unlockAudio);
+      };
+      window.addEventListener('pointerdown', unlockAudio, { passive: true });
+      window.addEventListener('keydown', unlockAudio, { passive: true });
+
+      // Toggle button event listeners
+      const soundBtns = document.querySelectorAll('.sound-toggle-btn');
+      soundBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setMuted(!isMuted);
+          if (!isMuted) {
+            playConfirm();
+          }
+        });
+      });
+
+      // Attach hover sounds to interactive elements
+      const hoverTargets = document.querySelectorAll('.nav-link, .mobile-nav-link, .btn, .theme-dot, .accent, .sound-toggle-btn, .hamburger-btn');
+      hoverTargets.forEach((target) => {
+        target.addEventListener('mouseenter', () => playHover());
+      });
+
+      // Attach click sounds to interactive links/buttons
+      const clickTargets = document.querySelectorAll('.nav-link, .mobile-nav-link, .btn, .hamburger-btn');
+      clickTargets.forEach((target) => {
+        target.addEventListener('click', () => playConfirm());
+      });
+    }
+
+    return {
+      init,
+      playHover,
+      playConfirm,
+      setMuted,
+      isMuted: () => isMuted
+    };
+  })();
+
+  // Initialize SoundEngine on load
+  SoundEngine.init();
+
+
+  // --------------------------------------------------------------------------
+  // 2. SCROLL PROGRESS BAR CONTROLLER
+  // --------------------------------------------------------------------------
+  const progressBar = document.getElementById('scroll-progress');
+  const header = document.getElementById('site-header');
+
+  function updateScrollProgress() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+    if (progressBar) {
+      progressBar.style.width = `${scrollPercent}%`;
+      progressBar.setAttribute('aria-valuenow', Math.round(scrollPercent));
+    }
+
+    // Toggle header glass background style when scrolled
+    if (header) {
+      if (scrollTop > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }
+  }
+
+  window.addEventListener('scroll', updateScrollProgress, { passive: true });
+  updateScrollProgress();
+
+
+  // --------------------------------------------------------------------------
+  // 3. DESKTOP CURSOR GLOW FOLLOWER
+  // --------------------------------------------------------------------------
+  const cursorGlow = document.getElementById('cursor-glow');
+  const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+  if (cursorGlow && isFinePointer) {
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentX = mouseX;
+    let currentY = mouseY;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }, { passive: true });
+
+    // Smooth cursor trail physics with requestAnimationFrame
+    function animateCursor() {
+      currentX += (mouseX - currentX) * 0.12;
+      currentY += (mouseY - currentY) * 0.12;
+      cursorGlow.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+  }
+
+
+  // --------------------------------------------------------------------------
+  // 4. MOBILE HAMBURGER MENU OVERLAY
+  // --------------------------------------------------------------------------
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+  function toggleMobileMenu(forceClose = false) {
+    if (!hamburgerBtn || !mobileMenuOverlay) return;
+
+    const shouldOpen = forceClose ? false : !hamburgerBtn.classList.contains('active');
+
+    hamburgerBtn.classList.toggle('active', shouldOpen);
+    hamburgerBtn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    mobileMenuOverlay.classList.toggle('active', shouldOpen);
+    mobileMenuOverlay.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+    document.body.classList.toggle('menu-open', shouldOpen);
+  }
+
+  if (hamburgerBtn && mobileMenuOverlay) {
+    hamburgerBtn.addEventListener('click', () => toggleMobileMenu());
+
+    // Close when clicking mobile nav links
+    mobileNavLinks.forEach((link) => {
+      link.addEventListener('click', () => toggleMobileMenu(true));
+    });
+
+    // Close when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && hamburgerBtn.classList.contains('active')) {
+        toggleMobileMenu(true);
+        hamburgerBtn.focus();
+      }
+    });
+
+    // Close when clicking backdrop area
+    mobileMenuOverlay.addEventListener('click', (e) => {
+      if (e.target === mobileMenuOverlay || e.target.classList.contains('mobile-menu-backdrop')) {
+        toggleMobileMenu(true);
+      }
+    });
+  }
+
+
+  // --------------------------------------------------------------------------
+  // 5. ACTIVE NAV LINK HIGHLIGHT WITH INTERSECTION OBSERVER
+  // --------------------------------------------------------------------------
+  const sections = document.querySelectorAll('section[id]');
+  const desktopNavLinks = document.querySelectorAll('.desktop-nav .nav-link');
+
+  if ('IntersectionObserver' in window && sections.length > 0) {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const currentId = entry.target.getAttribute('id');
+
+          // Highlight desktop nav links
+          desktopNavLinks.forEach((link) => {
+            const href = link.getAttribute('href');
+            if (href === `#${currentId}`) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+
+          // Highlight mobile menu links
+          mobileNavLinks.forEach((link) => {
+            const href = link.getAttribute('href');
+            if (href === `#${currentId}`) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((section) => sectionObserver.observe(section));
+  }
+
+
+  // --------------------------------------------------------------------------
+  // 6. CONTACT FORM VALIDATION & MAILTO ACTION TRIGGER
+  // --------------------------------------------------------------------------
+  const contactForm = document.getElementById('contact-form');
+  const nameInput = document.getElementById('contact-name');
+  const emailInput = document.getElementById('contact-email');
+  const messageInput = document.getElementById('contact-message');
+  const formStatus = document.getElementById('form-status');
+
+  const nameError = document.getElementById('name-error');
+  const emailError = document.getElementById('email-error');
+  const messageError = document.getElementById('message-error');
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Reset errors
+      if (nameError) nameError.textContent = '';
+      if (emailError) emailError.textContent = '';
+      if (messageError) messageError.textContent = '';
+      if (formStatus) {
+        formStatus.className = 'form-status-alert';
+        formStatus.textContent = '';
+      }
+
+      let isValid = true;
+      const name = nameInput ? nameInput.value.trim() : '';
+      const email = emailInput ? emailInput.value.trim() : '';
+      const message = messageInput ? messageInput.value.trim() : '';
+
+      // Validate Name
+      if (!name) {
+        if (nameError) nameError.textContent = 'Please enter your name.';
+        isValid = false;
+      }
+
+      // Validate Email
+      if (!email) {
+        if (emailError) emailError.textContent = 'Please enter your email address.';
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        if (emailError) emailError.textContent = 'Please enter a valid email address.';
+        isValid = false;
+      }
+
+      // Validate Message
+      if (!message) {
+        if (messageError) messageError.textContent = 'Please enter your message.';
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      // Construct mailto link
+      const recipient = 'ksrinath14307@gmail.com';
+      const subject = encodeURIComponent(`Portfolio Inquiry from ${name}`);
+      const body = encodeURIComponent(
+        `Hi Srinath,\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n\n---\nSent from srinath-portfolio`
+      );
+      const mailtoUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
+
+      // Update Aria-live status
+      if (formStatus) {
+        formStatus.className = 'form-status-alert success';
+        formStatus.textContent = 'Opening your email client to send message to ksrinath14307@gmail.com...';
+      }
+
+      // Trigger mail client
+      setTimeout(() => {
+        window.location.href = mailtoUrl;
+        contactForm.reset();
+      }, 400);
+    });
+  }
+
+
+  // --------------------------------------------------------------------------
+  // 7. 3D TILT INTERACTION ENGINE (DESKTOP & TOUCH MOBILE)
+  // --------------------------------------------------------------------------
+  const heroCard = document.getElementById('hero-photo-card');
+  const cardStage = document.getElementById('hero-3d-stage');
+  const tiltElements = document.querySelectorAll('.tilt-interactive');
+
+  function handle3DTilt(stageEl, cardEl, clientX, clientY, maxDeg = 14) {
+    if (!stageEl || !cardEl) return;
+    const rect = stageEl.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -maxDeg;
+    const rotateY = ((x - centerX) / centerX) * maxDeg;
+
+    cardEl.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  }
+
+  function reset3DTilt(cardEl) {
+    if (!cardEl) return;
+    cardEl.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    cardEl.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+  }
+
+  if (cardStage && heroCard) {
+    cardStage.addEventListener('mousemove', (e) => handle3DTilt(cardStage, heroCard, e.clientX, e.clientY, 14));
+    cardStage.addEventListener('mouseleave', () => reset3DTilt(heroCard));
+    cardStage.addEventListener('mouseenter', () => { heroCard.style.transition = 'none'; });
+
+    // Touch gesture support for mobile devices
+    cardStage.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        handle3DTilt(cardStage, heroCard, e.touches[0].clientX, e.touches[0].clientY, 10);
+      }
+    }, { passive: true });
+    cardStage.addEventListener('touchend', () => reset3DTilt(heroCard), { passive: true });
+  }
+
+  tiltElements.forEach((container) => {
+    const img = container.querySelector('.project-preview-img');
+    if (!img) return;
+
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const rotX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -2;
+      const rotY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 2;
+      img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      img.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+
+    container.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        const rect = container.getBoundingClientRect();
+        const rotX = ((e.touches[0].clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -6;
+        const rotY = ((e.touches[0].clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 6;
+        img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02)`;
+      }
+    }, { passive: true });
+    container.addEventListener('touchend', () => {
+      img.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+    }, { passive: true });
+  });
+
+
+  // --------------------------------------------------------------------------
+  // 8. GSAP 3.12 & SCROLLTRIGGER 3D ANIMATION ENGINE
+  // --------------------------------------------------------------------------
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Graceful degradation safeguard if GSAP is unavailable or reduced motion is requested
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || prefersReducedMotion) {
+    console.info('GSAP not loaded or prefers-reduced-motion active: Running standard layout mode.');
+    // Ensure all elements remain completely visible and active
+    document.querySelectorAll('.headline-line, .hero-bio, .hero-cta-group, .hero-roles-bar, .hero-photo-card, .section-3d, .timeline-line-fill').forEach((el) => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+    const timelineFill = document.getElementById('timeline-line-fill');
+    if (timelineFill) timelineFill.style.transform = 'scaleY(1)';
+    return;
+  }
+
+  // Register GSAP plugins
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Configure matchMedia for responsive animations
+  const mm = gsap.matchMedia();
+
+  // Desktop, Tablet, and Mobile animation setups
+  mm.add({
+    isWide: '(min-width: 1025px)',
+    isTablet: '(min-width: 769px) and (max-width: 1024px)',
+    isMobile: '(min-width: 421px) and (max-width: 768px)',
+    isSmallMobile: '(max-width: 420px)'
+  }, (context) => {
+    const { isWide, isTablet, isMobile, isSmallMobile } = context.conditions;
+    const isDesktop = isWide || isTablet;
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 1: HERO OPENING SEQUENCE ON PAGE LOAD
+    // ------------------------------------------------------------------------
+    const heroTl = gsap.timeline({
+      defaults: { ease: 'power4.out', duration: 1.1 }
+    });
+
+    // 1. Reveal headline lines from masked wrapper
+    heroTl.from('.headline-line', {
+      yPercent: 125,
+      rotateX: -20,
+      stagger: 0.16,
+      duration: 1.2,
+      ease: 'power4.out'
+    });
+
+    // 2. Fade in badge, bio, CTA buttons, and roles bar
+    heroTl.from('.hero-badge-pill', {
+      y: 20,
+      opacity: 0,
+      duration: 0.8
+    }, '-=0.9');
+
+    heroTl.from('.hero-bio', {
+      y: 25,
+      opacity: 0,
+      duration: 0.9
+    }, '-=0.7');
+
+    heroTl.from('.hero-cta-group .btn', {
+      y: 20,
+      opacity: 0,
+      stagger: 0.12,
+      duration: 0.8
+    }, '-=0.7');
+
+    heroTl.from('.hero-roles-bar', {
+      opacity: 0,
+      y: 15,
+      duration: 0.8
+    }, '-=0.6');
+
+    // 3. Hero 3D Photo Card swing-in on vertical axis + spotlight beam
+    heroTl.from('#hero-photo-card', {
+      rotateY: isDesktop ? -40 : -20,
+      scale: 0.85,
+      opacity: 0,
+      duration: 1.4,
+      transformOrigin: 'center center',
+      ease: 'power3.out'
+    }, '-=1.2');
+
+    heroTl.from('.hero-spotlight-beam', {
+      opacity: 0,
+      scale: 0.6,
+      duration: 1.6,
+      ease: 'power2.out'
+    }, '-=1.4');
+
+    heroTl.from('.floating-badge', {
+      scale: 0,
+      opacity: 0,
+      stagger: 0.18,
+      duration: 0.7,
+      ease: 'back.out(1.7)'
+    }, '-=0.8');
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 2: HERO EXIT CAMERA-PULLBACK SCROLL ANIMATION
+    // ------------------------------------------------------------------------
+    // As user scrolls down, hero tilts back (rotateX), moves away (translateZ), and fades
+    gsap.to('.hero-container', {
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.2
+      },
+      rotateX: isDesktop ? -16 : -8,
+      translateZ: isDesktop ? -300 : -140,
+      yPercent: isDesktop ? -12 : -6,
+      opacity: 0,
+      transformPerspective: 1200,
+      transformOrigin: '50% 50%',
+      ease: 'none'
+    });
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 3: GHOST WORDS HORIZONTAL PARALLAX DRIFT
+    // ------------------------------------------------------------------------
+    // The giant outlined words drift smoothly sideways across the viewport
+    const ghostWords = [
+      { selector: '.ghost-hero', startX: 0, endX: -120 },
+      { selector: '.ghost-about', startX: 80, endX: -140 },
+      { selector: '.ghost-skills', startX: -100, endX: 120 },
+      { selector: '.ghost-work', startX: 120, endX: -100 },
+      { selector: '.ghost-create', startX: -90, endX: 110 },
+      { selector: '.ghost-learn', startX: 100, endX: -120 },
+      { selector: '.ghost-contact', startX: -80, endX: 80 }
+    ];
+
+    ghostWords.forEach((item) => {
+      const el = document.querySelector(item.selector);
+      if (el) {
+        const parentSection = el.closest('section');
+        gsap.fromTo(el,
+          { x: item.startX },
+          {
+            x: item.endX,
+            scrollTrigger: {
+              trigger: parentSection || el,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5
+            },
+            ease: 'none'
+          }
+        );
+      }
+    });
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 4: SECTION 3D FLY-IN DEPTH TRANSITIONS
+    // ------------------------------------------------------------------------
+    // Every section flies in from depth (rotateX ~18deg, translateZ ~ -260px,
+    // translateY, opacity) settling flat with scrub, then drifts back slightly when leaving.
+    const animatedSections = document.querySelectorAll('.section-3d');
+
+    animatedSections.forEach((section, index) => {
+      const isLastSection = index === animatedSections.length - 1;
+      const rotateAmount = isDesktop ? 18 : 9;
+      const depthAmount = isDesktop ? -260 : -100;
+      const yOffset = isDesktop ? 90 : 45;
+
+      // Section Fly-In from Depth
+      gsap.fromTo(section,
+        {
+          rotateX: rotateAmount,
+          translateZ: depthAmount,
+          y: yOffset,
+          opacity: 0.15,
+          transformPerspective: 1200,
+          transformOrigin: '50% 0%'
+        },
+        {
+          rotateX: 0,
+          translateZ: 0,
+          y: 0,
+          opacity: 1,
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 88%',
+            end: 'top 35%',
+            scrub: 1.2
+          },
+          ease: 'power2.out'
+        }
+      );
+
+      // Section Exit Drift Back (Only for non-last sections)
+      if (!isLastSection) {
+        gsap.to(section, {
+          scrollTrigger: {
+            trigger: section,
+            start: 'bottom 40%',
+            end: 'bottom top',
+            scrub: 1.2
+          },
+          rotateX: isDesktop ? -8 : -4,
+          translateZ: isDesktop ? -120 : -50,
+          opacity: 0.4,
+          transformPerspective: 1200,
+          transformOrigin: '50% 100%',
+          ease: 'power1.in'
+        });
+      }
+    });
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 5: SKILLS 3D CARDS SWING-IN ON VERTICAL AXIS
+    // ------------------------------------------------------------------------
+    const skillCards = document.querySelectorAll('.skill-card-3d-wrap');
+    if (skillCards.length > 0) {
+      gsap.from(skillCards, {
+        scrollTrigger: {
+          trigger: '#skills',
+          start: 'top 70%',
+          toggleActions: 'play none none reverse'
+        },
+        rotateY: (idx) => (idx % 2 === 0 ? (isDesktop ? -35 : -18) : (isDesktop ? 35 : 18)),
+        y: 60,
+        opacity: 0,
+        stagger: 0.18,
+        duration: 1.1,
+        ease: 'power3.out',
+        transformPerspective: 1000
+      });
+    }
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 6: PROJECT CARDS 3D TURN TOWARD VIEWER
+    // ------------------------------------------------------------------------
+    // Alternating project cards turn toward viewer
+    const projectLeft = document.querySelector('.project-card-left');
+    const projectRight = document.querySelector('.project-card-right');
+
+    if (projectLeft) {
+      gsap.fromTo(projectLeft,
+        {
+          y: 40,
+          opacity: 0,
+          transformPerspective: 1200
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scrollTrigger: {
+            trigger: projectLeft,
+            start: 'top 80%',
+            end: 'top 40%',
+            scrub: 1
+          },
+          ease: 'power2.out'
+        }
+      );
+    }
+
+    if (projectRight) {
+      gsap.fromTo(projectRight,
+        {
+          y: 40,
+          opacity: 0,
+          transformPerspective: 1200
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scrollTrigger: {
+            trigger: projectRight,
+            start: 'top 80%',
+            end: 'top 40%',
+            scrub: 1
+          },
+          ease: 'power2.out'
+        }
+      );
+    }
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 7: CREATOR REEL PHONE FRAMES 3D FAN OUT & SCROLL BACK
+    // ------------------------------------------------------------------------
+    // The three phone frames fan out when scrolled down and retract smoothly on scroll back
+    const phone1 = document.getElementById('phone-frame-1');
+    const phone2 = document.getElementById('phone-frame-2');
+    const phone3 = document.getElementById('phone-frame-3');
+
+    if (phone1 && phone2 && phone3) {
+      const fanSpread = isWide ? 210 : isTablet ? 165 : isMobile ? 135 : 100;
+      const fanRotZ = isWide ? 10 : isTablet ? 8 : isMobile ? 5 : 3;
+      const fanRotY = isWide ? 12 : isTablet ? 10 : isMobile ? 6 : 4;
+      const fanZ = isWide ? -20 : isTablet ? -15 : -10;
+
+      const fanTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#creator-phones-stage',
+          start: 'top 80%',
+          end: 'top 30%',
+          scrub: 1.2
+        }
+      });
+
+      fanTl.fromTo(phone1,
+        {
+          xPercent: -50,
+          yPercent: -50,
+          x: 0,
+          rotateZ: 0,
+          rotateY: 0,
+          translateZ: 0,
+          opacity: 0.3
+        },
+        {
+          xPercent: -50,
+          yPercent: -50,
+          x: -fanSpread,
+          rotateZ: -fanRotZ,
+          rotateY: fanRotY,
+          translateZ: fanZ,
+          opacity: 1,
+          ease: 'power2.out'
+        }, 0
+      );
+
+      fanTl.fromTo(phone2,
+        {
+          xPercent: -50,
+          yPercent: -50,
+          scale: 0.92,
+          translateZ: 0,
+          opacity: 0.5
+        },
+        {
+          xPercent: -50,
+          yPercent: -50,
+          scale: isWide ? 1.06 : isTablet ? 1.03 : 1.01,
+          translateZ: isWide ? 40 : 20,
+          opacity: 1,
+          ease: 'power2.out'
+        }, 0
+      );
+
+      fanTl.fromTo(phone3,
+        {
+          xPercent: -50,
+          yPercent: -50,
+          x: 0,
+          rotateZ: 0,
+          rotateY: 0,
+          translateZ: 0,
+          opacity: 0.3
+        },
+        {
+          xPercent: -50,
+          yPercent: -50,
+          x: fanSpread,
+          rotateZ: fanRotZ,
+          rotateY: -fanRotY,
+          translateZ: fanZ,
+          opacity: 1,
+          ease: 'power2.out'
+        }, 0
+      );
+    }
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 8: "SEE MORE ON INSTAGRAM" BUTTON ENTRANCE & SCROLL BACK
+    // ------------------------------------------------------------------------
+    const creatorMoreAction = document.getElementById('creator-more-action');
+    if (creatorMoreAction) {
+      gsap.fromTo(creatorMoreAction,
+        {
+          y: 35,
+          opacity: 0,
+          scale: 0.94
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '#creator-more-action',
+            start: 'top 92%',
+            end: 'top 75%',
+            scrub: 1.2
+          }
+        }
+      );
+    }
+
+
+    // ------------------------------------------------------------------------
+    // ANIMATION 9: TIMELINE LASER PROGRESS & MILESTONES REVEAL
+    // ------------------------------------------------------------------------
+    // The laser timeline draws downward with scroll (scaleY scrub)
+    const timelineFill = document.getElementById('timeline-line-fill');
+    if (timelineFill) {
+      gsap.fromTo(timelineFill,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          transformOrigin: 'top center',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.timeline-container',
+            start: 'top 75%',
+            end: 'bottom 60%',
+            scrub: 1
+          }
+        }
+      );
+    }
+
+    // Timeline milestone cards fade & slide in with stagger
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    timelineItems.forEach((item) => {
+      gsap.from(item, {
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        },
+        x: isDesktop ? 40 : 20,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+      });
+    });
+
+  }); // End matchMedia
+
+
+  // --------------------------------------------------------------------------
+  // 9. SMOOTH SCROLL FOR ALL ANCHOR LINKS (INCLUDING BACK TO TOP)
+  // --------------------------------------------------------------------------
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', function (e) {
+      const targetId = this.getAttribute('href');
+      if (targetId && targetId.length > 1) {
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          targetEl.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }
+    });
+  });
+
+
+  // --------------------------------------------------------------------------
+  // 10. HERO FLOATING PARTICLES CANVAS
+  // --------------------------------------------------------------------------
+  (function initHeroParticles() {
+    const canvas = document.getElementById('particle-canvas');
+    const heroSection = document.getElementById('hero');
+    if (!canvas || !heroSection) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animFrameId = null;
+    let isVisible = false;
+    let particles = [];
+    const isMobileDevice = window.innerWidth < 768;
+    const particleCount = isMobileDevice ? 16 : 30;
+
+    // Cap devicePixelRatio at 1.5 max for optimal performance
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+    function resizeCanvas() {
+      const rect = heroSection.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+    }
+
+    function createParticles() {
+      particles = [];
+      const w = canvas.width;
+      const h = canvas.height;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          radius: (Math.random() * 1.8 + 0.8) * dpr,
+          alpha: Math.random() * 0.45 + 0.15,
+          speedY: (Math.random() * 0.4 + 0.15) * dpr,
+          speedX: (Math.random() * 0.3 - 0.15) * dpr
+        });
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Drift slowly upward & sideways
+        p.y -= p.speedY;
+        p.x += p.speedX;
+
+        // Wrap around canvas boundaries
+        if (p.y < 0) p.y = canvas.height;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function renderLoop() {
+      if (!isVisible) return;
+      drawParticles();
+      animFrameId = requestAnimationFrame(renderLoop);
+    }
+
+    function startAnimation() {
+      if (!animFrameId && isVisible) {
+        animFrameId = requestAnimationFrame(renderLoop);
+      }
+    }
+
+    function stopAnimation() {
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+    }
+
+    // Pause animation when hero is scrolled out of view using IntersectionObserver
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) {
+            startAnimation();
+          } else {
+            stopAnimation();
+          }
+        });
+      }, { threshold: 0.05 });
+
+      observer.observe(heroSection);
+    } else {
+      isVisible = true;
+      startAnimation();
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      createParticles();
+    }, { passive: true });
+
+    resizeCanvas();
+    createParticles();
+  })();
+
+
+  // --------------------------------------------------------------------------
+  // 11. VIDEO / REEL LIGHTBOX MODAL CONTROLLER
+  // --------------------------------------------------------------------------
+  (function initMediaModal() {
+    const modal = document.getElementById('media-modal');
+    if (!modal) return;
+
+    const modalTitle = document.getElementById('media-modal-title');
+    const modalMediaContainer = modal.querySelector('.cinematic-modal__media');
+    const modalTagsContainer = modal.querySelector('.cinematic-modal__tags');
+    const modalNotes = modal.querySelector('.cinematic-modal__notes');
+    const modalLink = modal.querySelector('.cinematic-modal__link');
+    const closeBtns = modal.querySelectorAll('[data-modal-close]');
+    const mainContent = document.getElementById('main-content');
+
+    let triggerElement = null;
+
+    function openModal(card) {
+      triggerElement = card;
+      const title = card.getAttribute('data-title') || 'Featured Edit';
+      const software = card.getAttribute('data-software') || '';
+      const notes = card.getAttribute('data-notes') || '[add edit notes here]';
+      const thumb = card.getAttribute('data-thumb') || '';
+      const instagramUrl = card.getAttribute('href') || '#';
+
+      // Populate Title
+      if (modalTitle) modalTitle.textContent = title;
+
+      // Populate Image Thumbnail
+      if (modalMediaContainer) {
+        modalMediaContainer.innerHTML = '';
+        if (thumb) {
+          const img = document.createElement('img');
+          img.src = thumb;
+          img.alt = title;
+          img.loading = 'eager';
+          modalMediaContainer.appendChild(img);
+        }
+      }
+
+      // Populate Software Tags
+      if (modalTagsContainer) {
+        modalTagsContainer.innerHTML = '';
+        if (software) {
+          const tags = software.split(',').map((t) => t.trim());
+          tags.forEach((tagText) => {
+            const tagSpan = document.createElement('span');
+            tagSpan.className = 'cinematic-modal__tag';
+            tagSpan.textContent = tagText;
+            modalTagsContainer.appendChild(tagSpan);
+          });
+        }
+      }
+
+      // Populate Notes
+      if (modalNotes) modalNotes.textContent = notes;
+
+      // Populate Instagram Link
+      if (modalLink) {
+        modalLink.href = instagramUrl;
+      }
+
+      // Open State & Accessibility
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      if (mainContent) mainContent.setAttribute('inert', 'true');
+      document.body.style.overflow = 'hidden';
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (window.gsap && !prefersReducedMotion) {
+        gsap.fromTo(modal.querySelector('.cinematic-modal__panel'),
+          { opacity: 0, scale: 0.92 },
+          { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out' }
+        );
+      }
+
+      // Set focus inside modal
+      const closeButton = modal.querySelector('.cinematic-modal__close');
+      if (closeButton) closeButton.focus();
+    }
+
+    function closeModal() {
+      if (!modal.classList.contains('is-open')) return;
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function finalizeClose() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        if (mainContent) mainContent.removeAttribute('inert');
+        document.body.style.overflow = '';
+
+        if (triggerElement) {
+          triggerElement.focus();
+          triggerElement = null;
+        }
+      }
+
+      if (window.gsap && !prefersReducedMotion) {
+        gsap.to(modal.querySelector('.cinematic-modal__panel'), {
+          opacity: 0,
+          scale: 0.92,
+          duration: 0.2,
+          ease: 'power2.in',
+          onComplete: finalizeClose
+        });
+      } else {
+        finalizeClose();
+      }
+    }
+
+    // Attach click triggers to phone frame cards
+    const phoneCards = document.querySelectorAll('.phone-frame-3d');
+    phoneCards.forEach((card) => {
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal(card);
+      });
+    });
+
+    // Close on backdrop & close button click
+    closeBtns.forEach((btn) => {
+      btn.addEventListener('click', closeModal);
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+        closeModal();
+      }
+    });
+
+    // Focus trap inside modal
+    modal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !modal.classList.contains('is-open')) return;
+      const focusables = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        last.focus();
+        e.preventDefault();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        first.focus();
+        e.preventDefault();
+      }
+    });
+  })();
+
+})();
