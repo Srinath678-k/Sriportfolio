@@ -30,7 +30,6 @@
   }
 
   // --------------------------------------------------------------------------
-<<<<<<< HEAD
   // 1. THEME ACCENT CONTROLLER (4 THEME PROFILES: GOLD, RED, CYAN, VIOLET)
   // --------------------------------------------------------------------------
   const THEME_STORAGE_KEY = 'srinath_portfolio_theme';
@@ -66,48 +65,23 @@
     allDots.forEach((dot) => {
       const dotTheme = dot.getAttribute('data-accent') || dot.getAttribute('data-set-theme');
       const isSelected = dotTheme === validAccent;
-=======
-  // 1. THEME CONTROLLER (GOLD / RED ACCENT) WITH LOCALSTORAGE PERSISTENCE
-  // --------------------------------------------------------------------------
-  const themeDots = document.querySelectorAll('.theme-dot');
-  const THEME_STORAGE_KEY = 'srinath_portfolio_theme';
-
-  /**
-   * Applies the requested theme and persists in localStorage
-   * @param {string} theme - 'gold' or 'red'
-   */
-  function setTheme(theme) {
-    const validTheme = theme === 'red' ? 'red' : 'gold';
-    document.documentElement.setAttribute('data-theme', validTheme);
-
-    // Update active state on dots
-    themeDots.forEach((dot) => {
-      const isSelected = dot.getAttribute('data-set-theme') === validTheme;
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
       dot.classList.toggle('active', isSelected);
       dot.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
     });
 
     // Save choice in localStorage safely inside try/catch block
     try {
-<<<<<<< HEAD
       localStorage.setItem(THEME_STORAGE_KEY, validAccent);
-=======
-      localStorage.setItem(THEME_STORAGE_KEY, validTheme);
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
     } catch (err) {
       console.warn('LocalStorage is not available to save theme preference:', err);
     }
   }
 
-<<<<<<< HEAD
   // Backwards compatibility helper
   function setTheme(theme) {
     setAccent(theme);
   }
 
-=======
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
   // Initialize theme from localStorage or default to gold
   (function initTheme() {
     let savedTheme = 'gold';
@@ -116,7 +90,6 @@
     } catch (err) {
       console.warn('LocalStorage inaccessible, using default gold theme:', err);
     }
-<<<<<<< HEAD
     setAccent(savedTheme);
 
     // Attach click listeners to all theme switchers
@@ -128,22 +101,12 @@
         if (typeof SoundEngine !== 'undefined' && SoundEngine.playConfirm) {
           SoundEngine.playConfirm();
         }
-=======
-    setTheme(savedTheme);
-
-    // Attach click listeners to theme switchers
-    themeDots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const selected = dot.getAttribute('data-set-theme');
-        setTheme(selected);
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
       });
     });
   })();
 
 
   // --------------------------------------------------------------------------
-<<<<<<< HEAD
   // 1.5 WEB AUDIO API SOUND LAYER (OPT-IN UI INTERACTION SOUNDS)
   // --------------------------------------------------------------------------
   const SOUND_STORAGE_KEY = 'srinath_portfolio_sound_muted';
@@ -360,8 +323,6 @@
 
 
   // --------------------------------------------------------------------------
-=======
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
   // 2. SCROLL PROGRESS BAR CONTROLLER
   // --------------------------------------------------------------------------
   const progressBar = document.getElementById('scroll-progress');
@@ -636,15 +597,9 @@
 
     container.addEventListener('mousemove', (e) => {
       const rect = container.getBoundingClientRect();
-<<<<<<< HEAD
       const rotX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -2;
       const rotY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 2;
       img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.03)`;
-=======
-      const rotX = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -8;
-      const rotY = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 8;
-      img.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.04)`;
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
     });
 
     container.addEventListener('mouseleave', () => {
@@ -912,23 +867,12 @@
     if (projectLeft) {
       gsap.fromTo(projectLeft,
         {
-<<<<<<< HEAD
           y: 40,
           opacity: 0,
           transformPerspective: 1200
         },
         {
           y: 0,
-=======
-          rotateY: isDesktop ? -18 : -8,
-          translateZ: isDesktop ? -120 : -50,
-          opacity: 0.2,
-          transformPerspective: 1200
-        },
-        {
-          rotateY: 0,
-          translateZ: 0,
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
           opacity: 1,
           scrollTrigger: {
             trigger: projectLeft,
@@ -944,23 +888,12 @@
     if (projectRight) {
       gsap.fromTo(projectRight,
         {
-<<<<<<< HEAD
           y: 40,
           opacity: 0,
           transformPerspective: 1200
         },
         {
           y: 0,
-=======
-          rotateY: isDesktop ? 18 : 8,
-          translateZ: isDesktop ? -120 : -50,
-          opacity: 0.2,
-          transformPerspective: 1200
-        },
-        {
-          rotateY: 0,
-          translateZ: 0,
->>>>>>> ac473779bfeb25f0b1a18e72df5d481c292ad71d
           opacity: 1,
           scrollTrigger: {
             trigger: projectRight,
